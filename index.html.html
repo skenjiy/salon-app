@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顧客リターン管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0f0f11; --surface:#18181c; --surface2:#222228; --border:#2e2e38;
+    --accent:#4fa3e0; --accent2:#7ec8e3; --text:#e8e8f0; --text2:#888899;
+    --success:#4caf7d; --radius:12px;
+    --c-visited-bg:#1e3a5f;  --c-visited:#4fa3e0;
+    --c-vip-bg:#2d1a3e;      --c-vip:#c99ef5;
+    --c-legacy-bg:#2e2500;   --c-legacy:#d4a843;
+    --c-lost-bg:#2d1212;     --c-lost:#e07b7b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  .logo{font-size:17px;font-weight:700;color:var(--accent2)}
+  .logo span{color:var(--text2);font-weight:300;font-size:12px;margin-left:8px}
+
+  .tabs{display:flex;gap:2px;padding:12px 12px 0;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto}
+  .tab{padding:9px 13px;border-radius:8px 8px 0 0;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);border:1px solid transparent;border-bottom:none;transition:all .2s;white-space:nowrap}
+  .tab.active{background:var(--bg);color:var(--accent);border-color:var(--border);border-bottom-color:var(--bg)}
+  .tab:hover:not(.active){color:var(--text)}
+
+  .panel{display:none;padding:16px}
+  .panel.active{display:block}
+
+  /* FORM */
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:640px;margin:0 auto}
+  .form-title{font-size:15px;font-weight:700;margin-bottom:18px;color:var(--accent2)}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group.full{grid-column:1/-1}
+  label{font-size:12px;color:var(--text2);font-weight:500;letter-spacing:.04em}
+  input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:9px 12px;transition:border-color .2s;width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  select option{background:var(--surface2)}
+  textarea{resize:vertical;min-height:72px}
+  .radio-group{display:flex;gap:12px;flex-wrap:wrap}
+  .radio-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px}
+  .radio-item input[type=radio]{width:auto;accent-color:var(--accent)}
+  .legacy-toggle{display:flex;align-items:center;gap:10px;background:var(--c-legacy-bg);border:1px solid var(--c-legacy);border-radius:8px;padding:10px 14px;cursor:pointer}
+  .legacy-toggle input[type=checkbox]{width:auto;accent-color:var(--c-legacy)}
+  .legacy-toggle span{font-size:13px;color:var(--c-legacy);font-weight:600}
+  .btn-primary{background:var(--accent);color:#fff;width:100%;margin-top:6px;padding:12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;transition:all .2s}
+  .btn-primary:hover{background:var(--accent2);color:#000}
+
+  /* LEGEND */
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+  .legend-dot{width:10px;height:10px;border-radius:50%}
+
+  /* LIST */
+  .list-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .search-box{flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:9px 12px}
+  .search-box:focus{outline:none;border-color:var(--accent)}
+  .filter-btn{padding:7px 11px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .fb-visited{background:var(--c-visited-bg)!important;color:var(--c-visited)!important;border-color:var(--c-visited)!important}
+  .fb-vip    {background:var(--c-vip-bg)!important;    color:var(--c-vip)!important;    border-color:var(--c-vip)!important}
+  .fb-legacy {background:var(--c-legacy-bg)!important; color:var(--c-legacy)!important; border-color:var(--c-legacy)!important}
+  .fb-lost   {background:var(--c-lost-bg)!important;   color:var(--c-lost)!important;   border-color:var(--c-lost)!important}
+  .customer-list{display:flex;flex-direction:column;gap:8px}
+  .customer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+  .customer-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px}
+  .customer-card.sv::before{background:var(--c-visited)}
+  .customer-card.sp::before{background:var(--c-vip)}
+  .customer-card.sl::before{background:var(--c-legacy)}
+  .customer-card.sr::before{background:var(--c-lost)}
+  .customer-card:hover{transform:translateX(2px);border-color:var(--accent)}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+  .card-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .badge{font-size:10px;padding:2px 7px;border-radius:999px;font-weight:600;font-family:'DM Mono',monospace}
+  .bv{background:var(--c-visited-bg);color:var(--c-visited)}
+  .bp{background:var(--c-vip-bg);color:var(--c-vip)}
+  .bl{background:var(--c-legacy-bg);color:var(--c-legacy)}
+  .br{background:var(--c-lost-bg);color:var(--c-lost)}
+  .bc{background:var(--surface2);color:#d4a843;border:1px solid var(--border)}
+  .card-date{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
+  .card-menu{font-size:12px;margin-top:3px}
+  .card-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--text2);margin-top:3px}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .modal-name{font-size:18px;font-weight:700}
+  .modal-close{width:30px;height:30px;background:var(--surface2);border:none;border-radius:50%;color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .modal-rows{display:flex;flex-direction:column;gap:7px}
+  .modal-row{display:flex;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:8px;font-size:13px}
+  .modal-rl{color:var(--text2);min-width:88px}
+  .modal-rv{word-break:break-all}
+
+  /* STATS */
+  .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+  .stat-num{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2)}
+  .stat-label{font-size:11px;color:var(--text2);margin-top:3px}
+
+  /* GOOGLE ADS */
+  .ads-header{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .ads-month-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:8px 12px}
+  .ads-saved-badge{font-size:12px;color:var(--success);padding:4px 10px;background:rgba(76,175,125,.15);border-radius:999px;border:1px solid rgba(76,175,125,.3)}
+  .ads-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .ads-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+  .ads-section-title{font-size:11px;color:var(--text2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .ads-field{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+  .ads-field:last-child{margin-bottom:0}
+  .ads-field label{font-size:11px;color:var(--text2)}
+  .ads-field input{font-size:13px;padding:7px 10px}
+  .ads-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+  .ads-summary-title{font-size:12px;color:var(--accent2);font-weight:700;margin-bottom:10px}
+  .ads-sum-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .ads-sum-row:last-child{border-bottom:none;font-weight:700;color:var(--accent2)}
+  .ads-sum-label{color:var(--text2)}
+  .ads-sum-value{font-family:'DM Mono',monospace}
+  .ads-positive{color:var(--success)!important}
+  .ads-negative{color:var(--c-lost)!important}
+  .ads-history{margin-top:8px}
+  .ads-history-title{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px}
+  .ads-history-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:5px;font-size:12px;cursor:pointer;transition:all .15s}
+  .ads-history-row:hover{border-color:var(--accent)}
+  .ads-history-month{font-family:'DM Mono',monospace;color:var(--accent2)}
+
+  /* INCOME */
+  .income-header{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .income-year-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:8px 12px}
+  .income-annual{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px}
+  .income-annual-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .income-annual-label{font-size:13px;color:var(--text2)}
+  .income-annual-num{font-size:28px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2)}
+  .income-months{display:flex;flex-direction:column;gap:5px}
+  .income-month-row{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border-radius:8px;cursor:pointer;transition:all .15s}
+  .income-month-row:hover{background:var(--surface);border:1px solid var(--border)}
+  .income-month-label{font-size:13px;min-width:36px;color:var(--text2)}
+  .income-month-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+  .income-month-bar{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+  .income-month-val{font-size:13px;font-family:'DM Mono',monospace;min-width:90px;text-align:right}
+  .income-month-input{font-size:13px;padding:5px 8px;width:110px;text-align:right}
+  .income-auto-badge{font-size:10px;color:var(--success);padding:2px 6px;background:rgba(76,175,125,.15);border-radius:999px;white-space:nowrap}
+  .income-edit-btn{font-size:11px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;white-space:nowrap}
+  .income-edit-btn:hover{color:var(--text);border-color:var(--accent)}
+
+  /* SETUP */
+  .setup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+  .setup-title{font-size:14px;font-weight:700;margin-bottom:10px;color:#d4a843}
+  .setup-step{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6}
+  .setup-step:last-child{border-bottom:none}
+  .step-num{min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+  .code-block{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--accent2);margin-top:8px;overflow-x:auto;white-space:pre;line-height:1.5}
+  .url-row{display:flex;gap:8px;margin-top:10px;align-items:center}
+  .url-row input{flex:1}
+  .btn-save{padding:9px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--success);color:#fff;padding:11px 22px;border-radius:999px;font-size:13px;font-weight:600;transition:transform .3s;z-index:999;white-space:nowrap}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+
+  .sec-label{font-size:12px;color:var(--text2);font-weight:600;margin:14px 0 8px;letter-spacing:.04em}
+
+  @media(max-width:480px){.form-grid,.ads-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✂️ SalonReturn <span>顧客管理</span></div>
+  <div id="gas-status" style="font-size:11px;color:var(--text2)">● スプシ未連携</div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('entry')">来店入力</div>
+  <div class="tab" onclick="switchTab('list')">顧客一覧</div>
+  <div class="tab" onclick="switchTab('stats')">集計</div>
+  <div class="tab" onclick="switchTab('ads')">📊 広告</div>
+  <div class="tab" onclick="switchTab('income')">💴 収入</div>
+  <div class="tab" onclick="switchTab('setup')">設定</div>
+</div>
+
+<!-- ======================== 来店入力 ======================== -->
+<div class="panel active" id="panel-entry">
+  <div class="form-card">
+    <div class="form-title">📋 来店記録を入力</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>日付 *</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="form-group">
+        <label>区分</label>
+        <select id="f-kubun">
+          <option value="リピ">リピ</option>
+          <option value="新規">新規</option>
+          <option value="紹介">紹介</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>お客様名 *</label>
+        <input type="text" id="f-name" placeholder="例：山田 花子" list="name-sugg">
+        <datalist id="name-sugg"></datalist>
+      </div>
+      <div class="form-group">
+        <label>性別</label>
+        <div class="radio-group" style="margin-top:5px">
+          <label class="radio-item"><input type="radio" name="gender" value="女"> 女</label>
+          <label class="radio-item"><input type="radio" name="gender" value="男"> 男</label>
+          <label class="radio-item"><input type="radio" name="gender" value="" checked> 未選択</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>来店動機</label>
+        <select id="f-motif">
+          <option value="">—</option>
+          <option value="Google広告">Google広告</option>
+          <option value="Instagram">Instagram</option>
+          <option value="紹介">紹介</option>
+          <option value="ホットペッパー">ホットペッパー</option>
+          <option value="通りがかり">通りがかり</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>住所（エリア）</label>
+        <input type="text" id="f-address" placeholder="例：渋谷区">
+      </div>
+      <div class="form-group full">
+        <label>お悩み・ご相談</label>
+        <input type="text" id="f-concern" placeholder="例：くせ毛・薄毛・白髪">
+      </div>
+      <div class="form-group full">
+        <label>メニュー *</label>
+        <input type="text" id="f-menu" placeholder="例：カット・カラー・トリートメント" list="menu-sugg">
+        <datalist id="menu-sugg">
+          <option value="カット"><option value="カット・カラー">
+          <option value="カット・カラー・トリートメント"><option value="カラー・シャンプーブロー">
+          <option value="カット・カラー・ハイライト"><option value="カット・トリートメント">
+          <option value="カット・カラー・縮毛矯正"><option value="パーマ">
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label>売上（税込）</label>
+        <input type="number" id="f-sales" placeholder="15400">
+      </div>
+      <div class="form-group">
+        <label>利益（報酬分）</label>
+        <input type="number" id="f-profit" placeholder="9100">
+      </div>
+      <div class="form-group full">
+        <label>メモ</label>
+        <textarea id="f-memo" placeholder="カルテ補足など"></textarea>
+      </div>
+      <div class="form-group full">
+        <label class="legacy-toggle">
+          <input type="checkbox" id="f-legacy">
+          <span>⭐ 前の店からの大切な顧客（来店回数不明）</span>
+        </label>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="submitEntry()">記録する →</button>
+  </div>
+</div>
+
+<!-- ======================== 顧客一覧 ======================== -->
+<div class="panel" id="panel-list">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-visited)"></div>来店済み</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-vip)"></div>VIP（20回超）</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-legacy)"></div>前店顧客</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-lost)"></div>失客（4ヶ月超）</div>
+  </div>
+  <div class="list-controls">
+    <input class="search-box" type="text" id="search-box" placeholder="名前・メニューで検索…" oninput="renderList()">
+    <button class="filter-btn" id="fb-v" onclick="toggleFilter('v','fb-v','fb-visited')">来店済み</button>
+    <button class="filter-btn" id="fb-p" onclick="toggleFilter('p','fb-p','fb-vip')">🟣VIP</button>
+    <button class="filter-btn" id="fb-l" onclick="toggleFilter('l','fb-l','fb-legacy')">🟡前店</button>
+    <button class="filter-btn" id="fb-r" onclick="toggleFilter('r','fb-r','fb-lost')">🔴失客</button>
+  </div>
+  <div class="customer-list" id="customer-list"></div>
+</div>
+
+<!-- ======================== 集計 ======================== -->
+<div class="panel" id="panel-stats">
+  <div class="stats-grid" id="stats-grid"></div>
+  <div id="month-breakdown"></div>
+</div>
+
+<!-- ======================== Google広告 ======================== -->
+<div class="panel" id="panel-ads">
+  <div class="ads-header">
+    <select class="ads-month-sel" id="ads-month-sel" onchange="loadAdsMonth()"></select>
+    <span id="ads-saved-badge" class="ads-saved-badge" style="display:none">保存済み ✓</span>
+  </div>
+
+  <!-- 自動集計サマリー -->
+  <div class="ads-summary">
+    <div class="ads-summary-title">📌 来店データから自動集計（<span id="ads-auto-month"></span>）</div>
+    <div class="ads-sum-row"><span class="ads-sum-label">新規客数</span><span class="ads-sum-value" id="a-auto-new">—</span></div>
+    <div class="ads-sum-row"><span class="ads-sum-label">リピート客数</span><span class="ads-sum-value" id="a-auto-repeat">—</span></div>
+    <div class="ads-sum-row"><span class="ads-sum-label">新規売上</span><span class="ads-sum-value" id="a-auto-new-sales">—</span></div>
+    <div class="ads-sum-row"><span class="ads-sum-label">リピート売上</span><span class="ads-sum-value" id="a-auto-rep-sales">—</span></div>
+    <div class="ads-sum-row"><span class="ads-sum-label">リピート率</span><span class="ads-sum-value" id="a-auto-rate">—</span></div>
+  </div>
+
+  <div class="ads-grid">
+    <!-- 広告パフォーマンス -->
+    <div class="ads-section">
+      <div class="ads-section-title">広告パフォーマンス</div>
+      <div class="ads-field"><label>クリック数</label><input type="number" id="a-clicks" placeholder="478"></div>
+      <div class="ads-field"><label>クリック率（%）</label><input type="number" step="0.01" id="a-ctr" placeholder="1.50"></div>
+      <div class="ads-field"><label>平均クリック単価（¥）</label><input type="number" id="a-cpc" placeholder="63"></div>
+      <div class="ads-field"><label>表示回数</label><input type="number" id="a-impressions" placeholder="31900"></div>
+      <div class="ads-field"><label>広告費用（¥）</label><input type="number" id="a-cost" placeholder="30200"></div>
+    </div>
+
+    <!-- 新規客 -->
+    <div class="ads-section">
+      <div class="ads-section-title">新規客（手動補正）</div>
+      <div class="ads-field"><label>新規客数</label><input type="number" id="a-new-count" placeholder="自動入力"></div>
+      <div class="ads-field"><label>売上（¥）</label><input type="number" id="a-new-sales" placeholder="自動入力"></div>
+      <div class="ads-field"><label>利益（¥）</label><input type="number" id="a-new-profit" placeholder="0"></div>
+      <div class="ads-field"><label>平均単価（¥）</label><input type="number" id="a-new-avg" placeholder="自動計算"></div>
+    </div>
+
+    <!-- リピート客 -->
+    <div class="ads-section">
+      <div class="ads-section-title">リピート客（手動補正）</div>
+      <div class="ads-field"><label>リピート客数</label><input type="number" id="a-rep-count" placeholder="自動入力"></div>
+      <div class="ads-field"><label>売上（¥）</label><input type="number" id="a-rep-sales" placeholder="自動入力"></div>
+      <div class="ads-field"><label>利益（¥）</label><input type="number" id="a-rep-profit" placeholder="0"></div>
+      <div class="ads-field"><label>平均単価（¥）</label><input type="number" id="a-rep-avg" placeholder="自動計算"></div>
+    </div>
+
+    <!-- 損益 -->
+    <div class="ads-section">
+      <div class="ads-section-title">損益</div>
+      <div class="ads-field"><label>合計売上（¥）</label><input type="number" id="a-total-sales" placeholder="自動計算" readonly style="opacity:.6"></div>
+      <div class="ads-field"><label>合計利益（¥）</label><input type="number" id="a-total-profit" placeholder="自動計算" readonly style="opacity:.6"></div>
+      <div class="ads-field"><label>純利益（利益－広告費）</label><input type="number" id="a-net" placeholder="自動計算" readonly style="opacity:.6"></div>
+      <div class="ads-field"><label>リピート率（%）</label><input type="number" id="a-rate" placeholder="自動計算" readonly style="opacity:.6"></div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="saveAds()">この月の広告データを保存 →</button>
+
+  <div class="ads-history" id="ads-history"></div>
+</div>
+
+<!-- ======================== 年間収入 ======================== -->
+<div class="panel" id="panel-income">
+  <div class="income-header">
+    <select class="income-year-sel" id="income-year-sel" onchange="renderIncome()"></select>
+    <button class="btn-primary" style="width:auto;margin:0;padding:8px 16px;font-size:13px" onclick="syncIncomeFromRecords()">来店データから同期</button>
+  </div>
+  <div class="income-annual">
+    <div class="income-annual-top">
+      <span class="income-annual-label">年間合計</span>
+      <span class="income-annual-num" id="income-annual-num">¥0</span>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:6px">各月をタップして金額を編集できます</div>
+  </div>
+  <div class="income-months" id="income-months"></div>
+</div>
+
+<!-- ======================== 設定 ======================== -->
+<div class="panel" id="panel-setup">
+  <div class="setup-card">
+    <div class="setup-title">🔗 Google スプレッドシート 自動追記</div>
+    <div class="setup-step">
+      <div class="step-num">1</div>
+      <div>スプレッドシートを開き <strong>「拡張機能」→「Apps Script」</strong> を選択</div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">2</div>
+      <div>
+        既存コードを全削除して以下を貼り付けて保存（Ctrl+S）
+        <div class="code-block">function doPost(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const d  = JSON.parse(e.postData.contents);
+
+  if (d._type === 'visit') {
+    const sh = ss.getSheetByName('来店記録') || ss.getActiveSheet();
+    sh.appendRow([
+      d.date, d.kubun, d.visitCount||'',
+      d.name, d.gender, d.address,
+      d.motif, d.concern, d.menu,
+      d.sales, d.profit, d.memo,
+      d.isLegacy ? '前店顧客' : ''
+    ]);
+    const row = sh.getLastRow();
+    const rng = sh.getRange(row,1,1,13);
+    if      (d.isLost)         rng.setBackground('#f4cccc');
+    else if (d.isLegacy)       rng.setBackground('#fff2cc');
+    else if (d.visitCount > 20)rng.setBackground('#d9d2e9');
+    else                       rng.setBackground('#c9daf8');
+  }
+
+  if (d._type === 'ads') {
+    const sh = ss.getSheetByName('Google広告')
+             || ss.insertSheet('Google広告');
+    sh.appendRow([
+      d.month, d.clicks, d.ctr, d.cpc,
+      d.impressions, d.cost,
+      d.newCount, d.newSales, d.newProfit,
+      d.repCount, d.repSales, d.repProfit,
+      d.totalSales, d.totalProfit, d.net, d.rate
+    ]);
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ok:true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">3</div>
+      <div>「デプロイ」→「新しいデプロイ」→ 種類：<strong>ウェブアプリ</strong><br>アクセス：<strong>全員</strong> → デプロイ → URLをコピー</div>
+    </div>
+    <div class="setup-step">
+      <div class="step-num">4</div>
+      <div>
+        コピーしたURLを貼り付けて保存
+        <div class="url-row">
+          <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/…/exec">
+          <button class="btn-save" onclick="saveGasUrl()">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--text2);padding:0 2px;line-height:1.7">
+    ※ 初回実行時にGoogleアカウントの権限承認が必要です<br>
+    ※ データはブラウザのローカルストレージにも保存されます<br>
+    ※ 来店記録は「来店記録」シート、広告は「Google広告」シートに別々に書き込まれます
+  </div>
+</div>
+
+<div id="toast">✅ 記録しました！</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-name" id="modal-name"></div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-rows" id="modal-rows"></div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+let records  = JSON.parse(localStorage.getItem('salon_records')  || '[]');
+let adsData  = JSON.parse(localStorage.getItem('salon_ads')      || '{}'); // { "2026-03": {...} }
+let incomeData = JSON.parse(localStorage.getItem('salon_income') || '{}'); // { "2026": { "1":705965, ... } }
+let gasUrl   = localStorage.getItem('salon_gas_url') || '';
+let activeF  = new Set();
+const DAY    = 86400000;
+
+// ===== STATUS =====
+function getStatus(r) {
+  if (r.isLegacy) return 'l';
+  const days = Math.floor((Date.now() - new Date(r.date)) / DAY);
+  if (days >= 120) return 'r';
+  if ((r.visitCount || 0) > 20) return 'p';
+  return 'v';
+}
+const SL = {v:'来店済',p:'VIP',l:'前店顧客',r:'失客'};
+const SB = {v:'bv',p:'bp',l:'bl',r:'br'};
+const SC = {v:'sv',p:'sp',l:'sl',r:'sr'};
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('f-date').value = today();
+  updateGasStatus();
+  renderList(); renderStats(); updateSugg();
+  initAdsMonthSel();
+  initIncomeYearSel();
+});
+
+function today() { return new Date().toISOString().split('T')[0]; }
+
+// ===== TABS =====
+const TABS = ['entry','list','stats','ads','income','setup'];
+function switchTab(n) {
+  TABS.forEach((t,i) => {
+    document.querySelectorAll('.tab')[i].classList.toggle('active', t===n);
+    document.getElementById('panel-'+t).classList.toggle('active', t===n);
+  });
+  if(n==='list')   renderList();
+  if(n==='stats')  renderStats();
+  if(n==='ads')    { initAdsMonthSel(); loadAdsMonth(); }
+  if(n==='income') { initIncomeYearSel(); renderIncome(); }
+}
+
+// ===== ENTRY =====
+async function submitEntry() {
+  const name = document.getElementById('f-name').value.trim();
+  const date = document.getElementById('f-date').value;
+  const menu = document.getElementById('f-menu').value.trim();
+  if (!name||!date||!menu) { alert('名前・日付・メニューは必須です'); return; }
+
+  const isLegacy   = document.getElementById('f-legacy').checked;
+  const visitCount = isLegacy ? null : records.filter(r=>r.name===name).length + 1;
+  const days       = Math.floor((Date.now()-new Date(date))/DAY);
+
+  const rec = {
+    id: Date.now(), date, _type: 'visit',
+    kubun:   document.getElementById('f-kubun').value,
+    visitCount, name,
+    gender:  document.querySelector('input[name=gender]:checked')?.value || '',
+    address: document.getElementById('f-address').value,
+    motif:   document.getElementById('f-motif').value,
+    concern: document.getElementById('f-concern').value,
+    menu,
+    sales:   document.getElementById('f-sales').value,
+    profit:  document.getElementById('f-profit').value,
+    memo:    document.getElementById('f-memo').value,
+    isLegacy,
+    isLost: !isLegacy && days >= 120
+  };
+
+  records.unshift(rec);
+  localStorage.setItem('salon_records', JSON.stringify(records));
+  if (gasUrl) sendToGas(rec);
+  showToast('✅ 記録しました！');
+  clearForm(); updateSugg(); renderStats();
+}
+
+function clearForm() {
+  ['f-name','f-concern','f-menu','f-sales','f-profit','f-memo','f-address']
+    .forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-motif').value='';
+  document.getElementById('f-legacy').checked=false;
+  document.querySelector('input[name=gender][value=""]').checked=true;
+  document.getElementById('f-date').value=today();
+}
+
+// ===== LIST =====
+function renderList() {
+  const q = document.getElementById('search-box').value.toLowerCase();
+  let data = records.map(r=>({...r,_s:getStatus(r)}));
+  if (q) data=data.filter(r=>r.name.toLowerCase().includes(q)||r.menu.toLowerCase().includes(q));
+  if (activeF.size>0) data=data.filter(r=>activeF.has(r._s));
+  const el=document.getElementById('customer-list');
+  if(!data.length){el.innerHTML='<div style="text-align:center;color:var(--text2);padding:36px">記録がありません</div>';return;}
+  el.innerHTML=data.map(r=>{
+    const cL=r.isLegacy?'回数不明':`${r.visitCount}回目`;
+    return `<div class="customer-card ${SC[r._s]}" onclick="openModal(${r.id})">
+      <div class="card-top">
+        <div class="card-name">${r.name}<span class="badge ${SB[r._s]}">${SL[r._s]}</span><span class="badge bc">${cL}</span></div>
+        <div class="card-date">${r.date}</div>
+      </div>
+      <div class="card-menu">${r.menu}</div>
+      <div class="card-meta">
+        <span>${r.kubun}</span>
+        ${r.gender?`<span>${r.gender}</span>`:''}
+        ${r.sales?`<span>¥${Number(r.sales).toLocaleString()}</span>`:''}
+        ${r.motif?`<span>${r.motif}</span>`:''}
+      </div></div>`;
+  }).join('');
+}
+
+function toggleFilter(key,btnId,cls) {
+  const btn=document.getElementById(btnId);
+  if(activeF.has(key)){activeF.delete(key);btn.className='filter-btn';}
+  else{activeF.add(key);btn.className=`filter-btn ${cls}`;}
+  renderList();
+}
+
+// ===== MODAL =====
+function openModal(id) {
+  const r=records.find(r=>r.id===id); if(!r) return;
+  document.getElementById('modal-name').textContent=r.name;
+  const rows=[
+    ['ステータス',SL[getStatus(r)]],['日付',r.date],['区分',r.kubun],
+    ['来店回数',r.isLegacy?'回数不明（前店顧客）':`${r.visitCount}回目`],
+    ['性別',r.gender||'—'],['住所',r.address||'—'],
+    ['来店動機',r.motif||'—'],['お悩み',r.concern||'—'],['メニュー',r.menu],
+    ['売上',r.sales?'¥'+Number(r.sales).toLocaleString():'—'],
+    ['利益',r.profit?'¥'+Number(r.profit).toLocaleString():'—'],
+    ['メモ',r.memo||'—'],
+  ];
+  document.getElementById('modal-rows').innerHTML=rows.map(([l,v])=>
+    `<div class="modal-row"><div class="modal-rl">${l}</div><div class="modal-rv">${v}</div></div>`
+  ).join('');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');}
+
+// ===== STATS =====
+function renderStats() {
+  const ss=records.map(r=>getStatus(r));
+  const totalSales=records.reduce((s,r)=>s+(Number(r.sales)||0),0);
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${records.length}</div><div class="stat-label">総来店件数</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--c-vip)">${ss.filter(s=>s==='p').length}</div><div class="stat-label">VIP（20回超）</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--c-lost)">${ss.filter(s=>s==='r').length}</div><div class="stat-label">失客（4ヶ月超）</div></div>
+    <div class="stat-card"><div class="stat-num">¥${Math.round(totalSales/1000)}k</div><div class="stat-label">累計売上</div></div>`;
+  const byM={};
+  records.forEach(r=>{const m=r.date?.slice(0,7);if(!m)return;if(!byM[m])byM[m]={count:0,sales:0,profit:0};byM[m].count++;byM[m].sales+=Number(r.sales)||0;byM[m].profit+=Number(r.profit)||0;});
+  const months=Object.keys(byM).sort().reverse().slice(0,6);
+  document.getElementById('month-breakdown').innerHTML=`
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px;font-weight:600">月別集計</div>
+    ${months.map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:5px;font-size:12px">
+      <span style="font-family:'DM Mono',monospace;color:var(--accent2)">${m}</span>
+      <span style="color:var(--text2)">${byM[m].count}件</span>
+      <span style="color:#d4a843">売上 ¥${byM[m].sales.toLocaleString()}</span>
+      <span style="color:var(--success)">利益 ¥${byM[m].profit.toLocaleString()}</span>
+    </div>`).join('')}`;
+}
+
+// ===== GOOGLE ADS =====
+function initAdsMonthSel() {
+  const sel = document.getElementById('ads-month-sel');
+  const cur = new Date();
+  const opts = [];
+  for (let i=0;i<18;i++) {
+    const d = new Date(cur.getFullYear(), cur.getMonth()-i, 1);
+    const val = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label = `${d.getFullYear()}年${d.getMonth()+1}月`;
+    opts.push(`<option value="${val}">${label}</option>`);
+  }
+  const prev = sel.value;
+  sel.innerHTML = opts.join('');
+  if (prev && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
+}
+
+function loadAdsMonth() {
+  const m = document.getElementById('ads-month-sel').value;
+  document.getElementById('ads-auto-month').textContent = m.replace('-','年')+'月';
+
+  // 来店データから自動集計
+  const mRecs = records.filter(r=>r.date?.slice(0,7)===m);
+  const newRecs = mRecs.filter(r=>r.visitCount===1||r.kubun==='新規');
+  const repRecs = mRecs.filter(r=>r.visitCount>1||r.kubun==='リピ');
+  const newSales = newRecs.reduce((s,r)=>s+(Number(r.sales)||0),0);
+  const repSales = repRecs.reduce((s,r)=>s+(Number(r.sales)||0),0);
+  const rate = mRecs.length ? Math.round(repRecs.length/mRecs.length*100) : 0;
+
+  document.getElementById('a-auto-new').textContent       = newRecs.length+'人';
+  document.getElementById('a-auto-repeat').textContent    = repRecs.length+'人';
+  document.getElementById('a-auto-new-sales').textContent = '¥'+newSales.toLocaleString();
+  document.getElementById('a-auto-rep-sales').textContent = '¥'+repSales.toLocaleString();
+  document.getElementById('a-auto-rate').textContent      = rate+'%';
+
+  // 保存済みデータを復元
+  const saved = adsData[m] || {};
+  const fields = ['clicks','ctr','cpc','impressions','cost','new-count','new-sales','new-profit','new-avg','rep-count','rep-sales','rep-profit','rep-avg'];
+  fields.forEach(f=>{
+    const el=document.getElementById('a-'+f); if(el) el.value=saved[f.replace('-','_')]||'';
+  });
+
+  // 自動入力
+  if(!saved.new_count)  document.getElementById('a-new-count').value  = newRecs.length||'';
+  if(!saved.new_sales)  document.getElementById('a-new-sales').value  = newSales||'';
+  if(!saved.rep_count)  document.getElementById('a-rep-count').value  = repRecs.length||'';
+  if(!saved.rep_sales)  document.getElementById('a-rep-sales').value  = repSales||'';
+
+  calcAdsSummary();
+
+  const badge=document.getElementById('ads-saved-badge');
+  badge.style.display = adsData[m] ? 'inline-block' : 'none';
+  renderAdsHistory();
+}
+
+// 入力変更時に自動計算
+['a-new-count','a-new-sales','a-new-profit','a-rep-count','a-rep-sales','a-rep-profit','a-cost'].forEach(id=>{
+  document.addEventListener('DOMContentLoaded',()=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input', calcAdsSummary);
+  });
+});
+
+function calcAdsSummary() {
+  const g = id => Number(document.getElementById(id)?.value)||0;
+  const newS=g('a-new-sales'), newP=g('a-new-profit'), newC=g('a-new-count');
+  const repS=g('a-rep-sales'), repP=g('a-rep-profit'), repC=g('a-rep-count');
+  const cost=g('a-cost');
+  const totalS=newS+repS, totalP=newP+repP, net=totalP-cost;
+  const total=newC+repC, rate=total?Math.round(repC/total*100):0;
+
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
+  set('a-new-avg',  newC?Math.round(newS/newC):'');
+  set('a-rep-avg',  repC?Math.round(repS/repC):'');
+  set('a-total-sales',  totalS||'');
+  set('a-total-profit', totalP||'');
+  set('a-net',  net||'');
+  set('a-rate', total?rate+'':'');
+
+  const netEl=document.getElementById('a-net');
+  if(netEl){netEl.className=net>=0?'ads-positive':'ads-negative';}
+}
+
+function saveAds() {
+  const m=document.getElementById('ads-month-sel').value;
+  const g=id=>Number(document.getElementById(id)?.value)||0;
+  const gs=id=>document.getElementById(id)?.value||'';
+  adsData[m]={
+    month:m,
+    clicks:g('a-clicks'), ctr:gs('a-ctr'), cpc:g('a-cpc'),
+    impressions:g('a-impressions'), cost:g('a-cost'),
+    new_count:g('a-new-count'), new_sales:g('a-new-sales'), new_profit:g('a-new-profit'),
+    rep_count:g('a-rep-count'), rep_sales:g('a-rep-sales'), rep_profit:g('a-rep-profit'),
+    total_sales:g('a-total-sales'), total_profit:g('a-total-profit'),
+    net:g('a-net'), rate:gs('a-rate')
+  };
+  localStorage.setItem('salon_ads',JSON.stringify(adsData));
+  if(gasUrl){
+    const payload={...adsData[m],_type:'ads',
+      newCount:adsData[m].new_count, newSales:adsData[m].new_sales, newProfit:adsData[m].new_profit,
+      repCount:adsData[m].rep_count, repSales:adsData[m].rep_sales, repProfit:adsData[m].rep_profit,
+      totalSales:adsData[m].total_sales, totalProfit:adsData[m].total_profit
+    };
+    sendToGas(payload);
+  }
+  document.getElementById('ads-saved-badge').style.display='inline-block';
+  showToast('📊 広告データを保存しました！');
+  renderAdsHistory();
+}
+
+function renderAdsHistory() {
+  const months=Object.keys(adsData).sort().reverse().slice(0,12);
+  if(!months.length){document.getElementById('ads-history').innerHTML='';return;}
+  document.getElementById('ads-history').innerHTML=`
+    <div class="ads-history-title">過去の広告データ</div>
+    ${months.map(m=>{
+      const d=adsData[m];
+      const netCls=d.net>=0?'ads-positive':'ads-negative';
+      return `<div class="ads-history-row" onclick="document.getElementById('ads-month-sel').value='${m}';loadAdsMonth()">
+        <span class="ads-history-month">${m.replace('-','年')}月</span>
+        <span style="color:var(--text2)">クリック ${d.clicks||'—'}</span>
+        <span style="color:var(--text2)">広告費 ¥${(d.cost||0).toLocaleString()}</span>
+        <span class="${netCls}">純利益 ¥${(d.net||0).toLocaleString()}</span>
+      </div>`;
+    }).join('')}`;
+}
+
+// ===== INCOME =====
+function initIncomeYearSel() {
+  const sel=document.getElementById('income-year-sel');
+  const cur=new Date().getFullYear();
+  const opts=[];
+  for(let y=cur;y>=cur-5;y--) opts.push(`<option value="${y}">${y}年</option>`);
+  sel.innerHTML=opts.join('');
+}
+
+function syncIncomeFromRecords() {
+  const year=document.getElementById('income-year-sel').value;
+  if(!incomeData[year]) incomeData[year]={};
+  for(let m=1;m<=12;m++){
+    const key=`${year}-${String(m).padStart(2,'0')}`;
+    const s=records.filter(r=>r.date?.slice(0,7)===key).reduce((a,r)=>a+(Number(r.sales)||0),0);
+    if(s>0) incomeData[year][m]=s;
+  }
+  localStorage.setItem('salon_income',JSON.stringify(incomeData));
+  renderIncome();
+  showToast('💴 収入データを同期しました！');
+}
+
+function renderIncome() {
+  const year=document.getElementById('income-year-sel').value;
+  const yData=incomeData[year]||{};
+  const vals=Array.from({length:12},(_,i)=>Number(yData[i+1])||0);
+  const total=vals.reduce((a,b)=>a+b,0);
+  const max=Math.max(...vals,1);
+
+  document.getElementById('income-annual-num').textContent='¥'+total.toLocaleString();
+
+  document.getElementById('income-months').innerHTML=vals.map((v,i)=>{
+    const pct=Math.round(v/max*100);
+    const mid=`${year}-${String(i+1).padStart(2,'0')}`;
+    // 来店データからの自動算出値
+    const autoVal=records.filter(r=>r.date?.slice(0,7)===mid).reduce((a,r)=>a+(Number(r.sales)||0),0);
+    return `<div class="income-month-row" id="inc-row-${i+1}">
+      <span class="income-month-label">${i+1}月</span>
+      <div class="income-month-bar-wrap"><div class="income-month-bar" style="width:${pct}%"></div></div>
+      <span class="income-month-val" id="inc-val-${i+1}" onclick="editIncome(${i+1},'${year}',${v})" style="cursor:pointer;color:${v?'var(--text)':'var(--text2)'}">
+        ${v?'¥'+v.toLocaleString():'—'}
+      </span>
+      ${autoVal&&autoVal!==v?`<span class="income-auto-badge" title="来店データの売上合計">自動: ¥${autoVal.toLocaleString()}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function editIncome(month, year, current) {
+  const val = prompt(`${year}年${month}月の収入を入力（現在: ${current?'¥'+current.toLocaleString():'未入力'}）`, current||'');
+  if (val===null) return;
+  const num=Number(val.replace(/[,¥]/g,''));
+  if(!isNaN(num)){
+    if(!incomeData[year]) incomeData[year]={};
+    if(num>0) incomeData[year][month]=num;
+    else delete incomeData[year][month];
+    localStorage.setItem('salon_income',JSON.stringify(incomeData));
+    renderIncome();
+  }
+}
+
+// ===== GAS =====
+function sendToGas(data) {
+  fetch(gasUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .catch(e=>console.warn('GAS失敗',e));
+}
+function saveGasUrl() {
+  const url=document.getElementById('gas-url-input').value.trim(); if(!url) return;
+  gasUrl=url; localStorage.setItem('salon_gas_url',url);
+  updateGasStatus(); alert('✅ 連携URLを保存しました！');
+}
+function updateGasStatus() {
+  const el=document.getElementById('gas-status');
+  el.textContent=gasUrl?'● スプシ連携中':'● スプシ未連携';
+  el.style.color=gasUrl?'var(--success)':'var(--text2)';
+  if(gasUrl) document.getElementById('gas-url-input').value=gasUrl;
+}
+
+// ===== UTILS =====
+function updateSugg() {
+  const names=[...new Set(records.map(r=>r.name))];
+  document.getElementById('name-sugg').innerHTML=names.map(n=>`<option value="${n}">`).join('');
+}
+function showToast(msg='✅ 保存しました！') {
+  const t=document.getElementById('toast'); t.textContent=msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
