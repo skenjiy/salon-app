@@ -17,20 +17,15 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
   .logo{font-size:17px;font-weight:700;color:var(--accent2)}
   .logo span{color:var(--text2);font-weight:300;font-size:12px;margin-left:8px}
-
   .tabs{display:flex;gap:2px;padding:12px 12px 0;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto}
   .tab{padding:9px 13px;border-radius:8px 8px 0 0;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);border:1px solid transparent;border-bottom:none;transition:all .2s;white-space:nowrap}
   .tab.active{background:var(--bg);color:var(--accent);border-color:var(--border);border-bottom-color:var(--bg)}
   .tab:hover:not(.active){color:var(--text)}
-
   .panel{display:none;padding:16px}
   .panel.active{display:block}
-
-  /* FORM */
   .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:640px;margin:0 auto}
   .form-title{font-size:15px;font-weight:700;margin-bottom:18px;color:var(--accent2)}
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -49,13 +44,10 @@
   .legacy-toggle span{font-size:13px;color:var(--c-legacy);font-weight:600}
   .btn-primary{background:var(--accent);color:#fff;width:100%;margin-top:6px;padding:12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;transition:all .2s}
   .btn-primary:hover{background:var(--accent2);color:#000}
-
-  /* LEGEND */
+  .btn-primary:disabled{opacity:.5;cursor:default}
   .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
   .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
   .legend-dot{width:10px;height:10px;border-radius:50%}
-
-  /* LIST */
   .list-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
   .search-box{flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:9px 12px}
   .search-box:focus{outline:none;border-color:var(--accent)}
@@ -83,8 +75,6 @@
   .card-date{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
   .card-menu{font-size:12px;margin-top:3px}
   .card-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--text2);margin-top:3px}
-
-  /* MODAL */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center}
   .modal-overlay.open{display:flex}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
@@ -96,14 +86,10 @@
   .modal-row{display:flex;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:8px;font-size:13px}
   .modal-rl{color:var(--text2);min-width:88px}
   .modal-rv{word-break:break-all}
-
-  /* STATS */
   .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
   .stat-num{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2)}
   .stat-label{font-size:11px;color:var(--text2);margin-top:3px}
-
-  /* GOOGLE ADS */
   .ads-header{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
   .ads-month-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:8px 12px}
   .ads-saved-badge{font-size:12px;color:var(--success);padding:4px 10px;background:rgba(76,175,125,.15);border-radius:999px;border:1px solid rgba(76,175,125,.3)}
@@ -127,8 +113,6 @@
   .ads-history-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:5px;font-size:12px;cursor:pointer;transition:all .15s}
   .ads-history-row:hover{border-color:var(--accent)}
   .ads-history-month{font-family:'DM Mono',monospace;color:var(--accent2)}
-
-  /* INCOME */
   .income-header{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
   .income-year-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;padding:8px 12px}
   .income-annual{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px}
@@ -146,8 +130,6 @@
   .income-auto-badge{font-size:10px;color:var(--success);padding:2px 6px;background:rgba(76,175,125,.15);border-radius:999px;white-space:nowrap}
   .income-edit-btn{font-size:11px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;white-space:nowrap}
   .income-edit-btn:hover{color:var(--text);border-color:var(--accent)}
-
-  /* SETUP */
   .setup-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
   .setup-title{font-size:14px;font-weight:700;margin-bottom:10px;color:#d4a843}
   .setup-step{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6}
@@ -157,22 +139,17 @@
   .url-row{display:flex;gap:8px;margin-top:10px;align-items:center}
   .url-row input{flex:1}
   .btn-save{padding:9px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
-
   #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--success);color:#fff;padding:11px 22px;border-radius:999px;font-size:13px;font-weight:600;transition:transform .3s;z-index:999;white-space:nowrap}
   #toast.show{transform:translateX(-50%) translateY(0)}
-
   .sec-label{font-size:12px;color:var(--text2);font-weight:600;margin:14px 0 8px;letter-spacing:.04em}
-
   @media(max-width:480px){.form-grid,.ads-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">✂️ SalonReturn <span>顧客管理</span></div>
   <div id="gas-status" style="font-size:11px;color:var(--text2)">● スプシ未連携</div>
 </header>
-
 <div class="tabs">
   <div class="tab active" onclick="switchTab('entry')">来店入力</div>
   <div class="tab" onclick="switchTab('list')">顧客一覧</div>
@@ -181,8 +158,6 @@
   <div class="tab" onclick="switchTab('income')">💴 収入</div>
   <div class="tab" onclick="switchTab('setup')">設定</div>
 </div>
-
-<!-- ======================== 来店入力 ======================== -->
 <div class="panel active" id="panel-entry">
   <div class="form-card">
     <div class="form-title">📋 来店記録を入力</div>
@@ -261,11 +236,9 @@
         </label>
       </div>
     </div>
-    <button class="btn-primary" onclick="submitEntry()">記録する →</button>
+    <button class="btn-primary" id="submit-btn" onclick="submitEntry()">記録する →</button>
   </div>
 </div>
-
-<!-- ======================== 顧客一覧 ======================== -->
 <div class="panel" id="panel-list">
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:var(--c-visited)"></div>来店済み</div>
@@ -282,21 +255,15 @@
   </div>
   <div class="customer-list" id="customer-list"></div>
 </div>
-
-<!-- ======================== 集計 ======================== -->
 <div class="panel" id="panel-stats">
   <div class="stats-grid" id="stats-grid"></div>
   <div id="month-breakdown"></div>
 </div>
-
-<!-- ======================== Google広告 ======================== -->
 <div class="panel" id="panel-ads">
   <div class="ads-header">
     <select class="ads-month-sel" id="ads-month-sel" onchange="loadAdsMonth()"></select>
     <span id="ads-saved-badge" class="ads-saved-badge" style="display:none">保存済み ✓</span>
   </div>
-
-  <!-- 自動集計サマリー -->
   <div class="ads-summary">
     <div class="ads-summary-title">📌 来店データから自動集計（<span id="ads-auto-month"></span>）</div>
     <div class="ads-sum-row"><span class="ads-sum-label">新規客数</span><span class="ads-sum-value" id="a-auto-new">—</span></div>
@@ -305,9 +272,7 @@
     <div class="ads-sum-row"><span class="ads-sum-label">リピート売上</span><span class="ads-sum-value" id="a-auto-rep-sales">—</span></div>
     <div class="ads-sum-row"><span class="ads-sum-label">リピート率</span><span class="ads-sum-value" id="a-auto-rate">—</span></div>
   </div>
-
   <div class="ads-grid">
-    <!-- 広告パフォーマンス -->
     <div class="ads-section">
       <div class="ads-section-title">広告パフォーマンス</div>
       <div class="ads-field"><label>クリック数</label><input type="number" id="a-clicks" placeholder="478"></div>
@@ -316,8 +281,6 @@
       <div class="ads-field"><label>表示回数</label><input type="number" id="a-impressions" placeholder="31900"></div>
       <div class="ads-field"><label>広告費用（¥）</label><input type="number" id="a-cost" placeholder="30200"></div>
     </div>
-
-    <!-- 新規客 -->
     <div class="ads-section">
       <div class="ads-section-title">新規客（手動補正）</div>
       <div class="ads-field"><label>新規客数</label><input type="number" id="a-new-count" placeholder="自動入力"></div>
@@ -325,8 +288,6 @@
       <div class="ads-field"><label>利益（¥）</label><input type="number" id="a-new-profit" placeholder="0"></div>
       <div class="ads-field"><label>平均単価（¥）</label><input type="number" id="a-new-avg" placeholder="自動計算"></div>
     </div>
-
-    <!-- リピート客 -->
     <div class="ads-section">
       <div class="ads-section-title">リピート客（手動補正）</div>
       <div class="ads-field"><label>リピート客数</label><input type="number" id="a-rep-count" placeholder="自動入力"></div>
@@ -334,8 +295,6 @@
       <div class="ads-field"><label>利益（¥）</label><input type="number" id="a-rep-profit" placeholder="0"></div>
       <div class="ads-field"><label>平均単価（¥）</label><input type="number" id="a-rep-avg" placeholder="自動計算"></div>
     </div>
-
-    <!-- 損益 -->
     <div class="ads-section">
       <div class="ads-section-title">損益</div>
       <div class="ads-field"><label>合計売上（¥）</label><input type="number" id="a-total-sales" placeholder="自動計算" readonly style="opacity:.6"></div>
@@ -344,13 +303,9 @@
       <div class="ads-field"><label>リピート率（%）</label><input type="number" id="a-rate" placeholder="自動計算" readonly style="opacity:.6"></div>
     </div>
   </div>
-
   <button class="btn-primary" onclick="saveAds()">この月の広告データを保存 →</button>
-
   <div class="ads-history" id="ads-history"></div>
 </div>
-
-<!-- ======================== 年間収入 ======================== -->
 <div class="panel" id="panel-income">
   <div class="income-header">
     <select class="income-year-sel" id="income-year-sel" onchange="renderIncome()"></select>
@@ -365,64 +320,19 @@
   </div>
   <div class="income-months" id="income-months"></div>
 </div>
-
-<!-- ======================== 設定 ======================== -->
 <div class="panel" id="panel-setup">
   <div class="setup-card">
-    <div class="setup-title">🔗 Google スプレッドシート 自動追記</div>
+    <div class="setup-title">🔗 Google スプレッドシート 自動連携</div>
     <div class="setup-step">
       <div class="step-num">1</div>
       <div>スプレッドシートを開き <strong>「拡張機能」→「Apps Script」</strong> を選択</div>
     </div>
     <div class="setup-step">
       <div class="step-num">2</div>
-      <div>
-        既存コードを全削除して以下を貼り付けて保存（Ctrl+S）
-        <div class="code-block">function doPost(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const d  = JSON.parse(e.postData.contents);
-
-  if (d._type === 'visit') {
-    const sh = ss.getSheetByName('来店記録') || ss.getActiveSheet();
-    sh.appendRow([
-      d.date, d.kubun, d.visitCount||'',
-      d.name, d.gender, d.address,
-      d.motif, d.concern, d.menu,
-      d.sales, d.profit, d.memo,
-      d.isLegacy ? '前店顧客' : ''
-    ]);
-    const row = sh.getLastRow();
-    const rng = sh.getRange(row,1,1,13);
-    if      (d.isLost)         rng.setBackground('#f4cccc');
-    else if (d.isLegacy)       rng.setBackground('#fff2cc');
-    else if (d.visitCount > 20)rng.setBackground('#d9d2e9');
-    else                       rng.setBackground('#c9daf8');
-  }
-
-  if (d._type === 'ads') {
-    const sh = ss.getSheetByName('Google広告')
-             || ss.insertSheet('Google広告');
-    sh.appendRow([
-      d.month, d.clicks, d.ctr, d.cpc,
-      d.impressions, d.cost,
-      d.newCount, d.newSales, d.newProfit,
-      d.repCount, d.repSales, d.repProfit,
-      d.totalSales, d.totalProfit, d.net, d.rate
-    ]);
-  }
-
-  return ContentService
-    .createTextOutput(JSON.stringify({ok:true}))
-    .setMimeType(ContentService.MimeType.JSON);
-}</div>
-      </div>
+      <div>Apps Scriptに doPost / doGet を貼り付けて保存し、ウェブアプリとしてデプロイ（アクセス：全員）</div>
     </div>
     <div class="setup-step">
       <div class="step-num">3</div>
-      <div>「デプロイ」→「新しいデプロイ」→ 種類：<strong>ウェブアプリ</strong><br>アクセス：<strong>全員</strong> → デプロイ → URLをコピー</div>
-    </div>
-    <div class="setup-step">
-      <div class="step-num">4</div>
       <div>
         コピーしたURLを貼り付けて保存
         <div class="url-row">
@@ -431,16 +341,23 @@
         </div>
       </div>
     </div>
+    <div class="setup-step">
+      <div class="step-num">4</div>
+      <div>
+        <span id="sync-status" style="color:var(--text2)">未同期</span>
+        <div class="url-row">
+          <button class="btn-save" onclick="manualSync()">今すぐスプレッドシートと同期</button>
+        </div>
+      </div>
+    </div>
   </div>
   <div style="font-size:11px;color:var(--text2);padding:0 2px;line-height:1.7">
-    ※ 初回実行時にGoogleアカウントの権限承認が必要です<br>
-    ※ データはブラウザのローカルストレージにも保存されます<br>
+    ※ アプリ起動時に自動でスプレッドシートの最新データを読み込みます（来店回数・VIP判定などが端末をまたいで正しく反映されます）<br>
+    ※ データはブラウザのローカルストレージにもキャッシュされます<br>
     ※ 来店記録は「来店記録」シート、広告は「Google広告」シートに別々に書き込まれます
   </div>
 </div>
-
 <div id="toast">✅ 記録しました！</div>
-
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -450,17 +367,14 @@
     <div class="modal-rows" id="modal-rows"></div>
   </div>
 </div>
-
 <script>
-// ===== DATA =====
 let records  = JSON.parse(localStorage.getItem('salon_records')  || '[]');
-let adsData  = JSON.parse(localStorage.getItem('salon_ads')      || '{}'); // { "2026-03": {...} }
-let incomeData = JSON.parse(localStorage.getItem('salon_income') || '{}'); // { "2026": { "1":705965, ... } }
+let adsData  = JSON.parse(localStorage.getItem('salon_ads')      || '{}');
+let incomeData = JSON.parse(localStorage.getItem('salon_income') || '{}');
 let gasUrl   = localStorage.getItem('salon_gas_url') || '';
 let activeF  = new Set();
 const DAY    = 86400000;
 
-// ===== STATUS =====
 function getStatus(r) {
   if (r.isLegacy) return 'l';
   const days = Math.floor((Date.now() - new Date(r.date)) / DAY);
@@ -472,18 +386,17 @@ const SL = {v:'来店済',p:'VIP',l:'前店顧客',r:'失客'};
 const SB = {v:'bv',p:'bp',l:'bl',r:'br'};
 const SC = {v:'sv',p:'sp',l:'sl',r:'sr'};
 
-// ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('f-date').value = today();
   updateGasStatus();
   renderList(); renderStats(); updateSugg();
   initAdsMonthSel();
   initIncomeYearSel();
+  if (gasUrl) syncFromSheet();
 });
 
 function today() { return new Date().toISOString().split('T')[0]; }
 
-// ===== TABS =====
 const TABS = ['entry','list','stats','ads','income','setup'];
 function switchTab(n) {
   TABS.forEach((t,i) => {
@@ -496,7 +409,6 @@ function switchTab(n) {
   if(n==='income') { initIncomeYearSel(); renderIncome(); }
 }
 
-// ===== ENTRY =====
 async function submitEntry() {
   const name = document.getElementById('f-name').value.trim();
   const date = document.getElementById('f-date').value;
@@ -527,7 +439,7 @@ async function submitEntry() {
   localStorage.setItem('salon_records', JSON.stringify(records));
   if (gasUrl) sendToGas(rec);
   showToast('✅ 記録しました！');
-  clearForm(); updateSugg(); renderStats();
+  clearForm(); updateSugg(); renderStats(); renderList();
 }
 
 function clearForm() {
@@ -539,7 +451,6 @@ function clearForm() {
   document.getElementById('f-date').value=today();
 }
 
-// ===== LIST =====
 function renderList() {
   const q = document.getElementById('search-box').value.toLowerCase();
   let data = records.map(r=>({...r,_s:getStatus(r)}));
@@ -549,7 +460,7 @@ function renderList() {
   if(!data.length){el.innerHTML='<div style="text-align:center;color:var(--text2);padding:36px">記録がありません</div>';return;}
   el.innerHTML=data.map(r=>{
     const cL=r.isLegacy?'回数不明':`${r.visitCount}回目`;
-    return `<div class="customer-card ${SC[r._s]}" onclick="openModal(${r.id})">
+    return `<div class="customer-card ${SC[r._s]}" onclick="openModal('${r.id}')">
       <div class="card-top">
         <div class="card-name">${r.name}<span class="badge ${SB[r._s]}">${SL[r._s]}</span><span class="badge bc">${cL}</span></div>
         <div class="card-date">${r.date}</div>
@@ -571,9 +482,8 @@ function toggleFilter(key,btnId,cls) {
   renderList();
 }
 
-// ===== MODAL =====
 function openModal(id) {
-  const r=records.find(r=>r.id===id); if(!r) return;
+  const r=records.find(r=>String(r.id)===String(id)); if(!r) return;
   document.getElementById('modal-name').textContent=r.name;
   const rows=[
     ['ステータス',SL[getStatus(r)]],['日付',r.date],['区分',r.kubun],
@@ -592,7 +502,6 @@ function openModal(id) {
 function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect();}
 function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');}
 
-// ===== STATS =====
 function renderStats() {
   const ss=records.map(r=>getStatus(r));
   const totalSales=records.reduce((s,r)=>s+(Number(r.sales)||0),0);
@@ -614,7 +523,6 @@ function renderStats() {
     </div>`).join('')}`;
 }
 
-// ===== GOOGLE ADS =====
 function initAdsMonthSel() {
   const sel = document.getElementById('ads-month-sel');
   const cur = new Date();
@@ -634,7 +542,6 @@ function loadAdsMonth() {
   const m = document.getElementById('ads-month-sel').value;
   document.getElementById('ads-auto-month').textContent = m.replace('-','年')+'月';
 
-  // 来店データから自動集計
   const mRecs = records.filter(r=>r.date?.slice(0,7)===m);
   const newRecs = mRecs.filter(r=>r.visitCount===1||r.kubun==='新規');
   const repRecs = mRecs.filter(r=>r.visitCount>1||r.kubun==='リピ');
@@ -648,14 +555,12 @@ function loadAdsMonth() {
   document.getElementById('a-auto-rep-sales').textContent = '¥'+repSales.toLocaleString();
   document.getElementById('a-auto-rate').textContent      = rate+'%';
 
-  // 保存済みデータを復元
   const saved = adsData[m] || {};
   const fields = ['clicks','ctr','cpc','impressions','cost','new-count','new-sales','new-profit','new-avg','rep-count','rep-sales','rep-profit','rep-avg'];
   fields.forEach(f=>{
     const el=document.getElementById('a-'+f); if(el) el.value=saved[f.replace('-','_')]||'';
   });
 
-  // 自動入力
   if(!saved.new_count)  document.getElementById('a-new-count').value  = newRecs.length||'';
   if(!saved.new_sales)  document.getElementById('a-new-sales').value  = newSales||'';
   if(!saved.rep_count)  document.getElementById('a-rep-count').value  = repRecs.length||'';
@@ -668,7 +573,6 @@ function loadAdsMonth() {
   renderAdsHistory();
 }
 
-// 入力変更時に自動計算
 ['a-new-count','a-new-sales','a-new-profit','a-rep-count','a-rep-sales','a-rep-profit','a-cost'].forEach(id=>{
   document.addEventListener('DOMContentLoaded',()=>{
     const el=document.getElementById(id);
@@ -740,7 +644,6 @@ function renderAdsHistory() {
     }).join('')}`;
 }
 
-// ===== INCOME =====
 function initIncomeYearSel() {
   const sel=document.getElementById('income-year-sel');
   const cur=new Date().getFullYear();
@@ -774,7 +677,6 @@ function renderIncome() {
   document.getElementById('income-months').innerHTML=vals.map((v,i)=>{
     const pct=Math.round(v/max*100);
     const mid=`${year}-${String(i+1).padStart(2,'0')}`;
-    // 来店データからの自動算出値
     const autoVal=records.filter(r=>r.date?.slice(0,7)===mid).reduce((a,r)=>a+(Number(r.sales)||0),0);
     return `<div class="income-month-row" id="inc-row-${i+1}">
       <span class="income-month-label">${i+1}月</span>
@@ -800,15 +702,52 @@ function editIncome(month, year, current) {
   }
 }
 
-// ===== GAS =====
 function sendToGas(data) {
   fetch(gasUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
     .catch(e=>console.warn('GAS失敗',e));
 }
+
+async function syncFromSheet() {
+  if (!gasUrl) return;
+  const statusEl = document.getElementById('sync-status');
+  const submitBtn = document.getElementById('submit-btn');
+  if (statusEl) statusEl.textContent = '🔄 同期中…';
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    const res = await fetch(gasUrl + '?action=getAll');
+    const data = await res.json();
+    const sheetRecords = (data.records || []).map(r => ({
+      ...r,
+      _type: 'visit',
+      isLost: !r.isLegacy && Math.floor((Date.now() - new Date(r.date)) / DAY) >= 120
+    }));
+
+    const localOnly = records.filter(r => typeof r.id === 'number');
+
+    records = [...sheetRecords.reverse(), ...localOnly];
+    localStorage.setItem('salon_records', JSON.stringify(records));
+
+    renderList(); renderStats(); updateSugg();
+    if (document.getElementById('panel-ads').classList.contains('active')) loadAdsMonth();
+    if (document.getElementById('panel-income').classList.contains('active')) renderIncome();
+
+    if (statusEl) statusEl.textContent = `✅ 同期完了（${sheetRecords.length}件）`;
+  } catch (e) {
+    console.warn('同期失敗', e);
+    if (statusEl) statusEl.textContent = '⚠️ 同期に失敗しました（ネット環境をご確認ください）';
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
+function manualSync() { syncFromSheet(); }
+
 function saveGasUrl() {
   const url=document.getElementById('gas-url-input').value.trim(); if(!url) return;
   gasUrl=url; localStorage.setItem('salon_gas_url',url);
   updateGasStatus(); alert('✅ 連携URLを保存しました！');
+  syncFromSheet();
 }
 function updateGasStatus() {
   const el=document.getElementById('gas-status');
@@ -817,7 +756,6 @@ function updateGasStatus() {
   if(gasUrl) document.getElementById('gas-url-input').value=gasUrl;
 }
 
-// ===== UTILS =====
 function updateSugg() {
   const names=[...new Set(records.map(r=>r.name))];
   document.getElementById('name-sugg').innerHTML=names.map(n=>`<option value="${n}">`).join('');
